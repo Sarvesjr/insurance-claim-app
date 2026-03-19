@@ -11,16 +11,19 @@ from utils import process_damage_image, classify_damage_severity
 st.set_page_config(page_title="AI Insurance Analyzer", layout="wide")
 
 # -----------------------------
-# PREMIUM UI (10/10)
+# CLEAN PREMIUM UI
 # -----------------------------
 st.markdown("""
 <style>
+
+/* BACKGROUND */
 .stApp {
     background: radial-gradient(circle at top, #0f172a, #020617);
     color: #e2e8f0;
     font-family: 'Segoe UI', sans-serif;
 }
 
+/* HEADINGS */
 h1 {
     font-size: 3rem;
     font-weight: 800;
@@ -31,26 +34,44 @@ h2, h3 {
     color: #7dd3fc;
 }
 
-.glass {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(14px);
-    border-radius: 16px;
+/* REMOVE EXTRA BOX */
+.block-container > div {
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* GLASS CARD */
+.glass-card {
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(12px);
+    border-radius: 14px;
     padding: 20px;
     border: 1px solid rgba(255,255,255,0.08);
     margin-bottom: 20px;
-    transition: all 0.3s ease;
+    transition: 0.3s ease;
 }
 
-.glass:hover {
+.glass-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(56,189,248,0.2);
+    box-shadow: 0 10px 25px rgba(56,189,248,0.15);
 }
 
+/* INPUTS */
+.stTextInput input,
+.stNumberInput input,
+.stSelectbox div {
+    background-color: rgba(2,6,23,0.9) !important;
+    color: white !important;
+    border-radius: 8px;
+}
+
+/* BUTTON */
 .stButton > button {
     background: linear-gradient(135deg, #38bdf8, #0ea5e9);
     color: white;
-    border-radius: 12px;
-    padding: 0.7rem 2rem;
+    border-radius: 10px;
+    padding: 0.6rem 2rem;
     font-weight: 600;
     border: none;
 }
@@ -59,12 +80,14 @@ h2, h3 {
     transform: scale(1.05);
 }
 
+/* METRICS */
 [data-testid="stMetric"] {
-    background: rgba(255,255,255,0.05);
+    background: rgba(255,255,255,0.04);
     padding: 15px;
-    border-radius: 12px;
+    border-radius: 10px;
     border: 1px solid rgba(255,255,255,0.08);
 }
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -102,7 +125,8 @@ st.markdown("<p style='color:#94a3b8;'>AI-powered damage detection and claim est
 # -----------------------------
 # USER INFO
 # -----------------------------
-st.markdown('<div class="glass">', unsafe_allow_html=True)
+st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+
 st.subheader("User Information")
 
 col1, col2, col3 = st.columns(3)
@@ -127,7 +151,8 @@ st.markdown('</div>', unsafe_allow_html=True)
 # -----------------------------
 # VEHICLE DETAILS
 # -----------------------------
-st.markdown('<div class="glass">', unsafe_allow_html=True)
+st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+
 st.subheader("Vehicle Details")
 
 col4, col5 = st.columns(2)
@@ -153,7 +178,8 @@ st.markdown('</div>', unsafe_allow_html=True)
 # -----------------------------
 # IMAGE UPLOAD
 # -----------------------------
-st.markdown('<div class="glass">', unsafe_allow_html=True)
+st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+
 st.subheader("Upload Damage Image")
 
 uploaded_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
@@ -170,7 +196,7 @@ if uploaded_file:
     if img_array.shape[-1] == 4:
         img_array = cv2.cvtColor(img_array, cv2.COLOR_RGBA2RGB)
 
-    st.markdown('<div class="glass">', unsafe_allow_html=True)
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
 
@@ -185,10 +211,8 @@ if uploaded_file:
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # -----------------------------
     # DAMAGE SUMMARY
-    # -----------------------------
-    st.markdown('<div class="glass">', unsafe_allow_html=True)
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
 
     st.subheader("Damage Analysis")
 
@@ -198,14 +222,11 @@ if uploaded_file:
     c3.metric("Car Value", f"₹{car_value:,.0f}")
 
     st.markdown(f"Vehicle: {car_brand_custom} {car_name} ({car_type})")
-
     st.progress(min(damage_percent / 100, 1.0))
 
     st.markdown('</div>', unsafe_allow_html=True)
 
-    # -----------------------------
-    # PREDICTION
-    # -----------------------------
+    # PREDICT
     if st.button("Predict Claim", width='stretch'):
 
         if not name or not car_name:
@@ -231,7 +252,7 @@ if uploaded_file:
                 insurance_type
             )
 
-            st.markdown('<div class="glass">', unsafe_allow_html=True)
+            st.markdown('<div class="glass-card">', unsafe_allow_html=True)
 
             st.subheader("Claim Breakdown")
 
@@ -247,10 +268,8 @@ if uploaded_file:
 
             st.markdown('</div>', unsafe_allow_html=True)
 
-            # -----------------------------
             # EXPLANATION
-            # -----------------------------
-            st.markdown('<div class="glass">', unsafe_allow_html=True)
+            st.markdown('<div class="glass-card">', unsafe_allow_html=True)
 
             st.subheader("Detailed Explanation")
 
