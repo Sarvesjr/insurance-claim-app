@@ -11,19 +11,19 @@ from utils import process_damage_image, classify_damage_severity
 st.set_page_config(page_title="AI Insurance Analyzer", layout="wide")
 
 # -----------------------------
-# PREMIUM UI
+# PREMIUM UI (10/10)
 # -----------------------------
 st.markdown("""
 <style>
 .stApp {
-    background: linear-gradient(135deg, #0f172a, #020617);
+    background: radial-gradient(circle at top, #0f172a, #020617);
     color: #e2e8f0;
     font-family: 'Segoe UI', sans-serif;
 }
 
 h1 {
-    font-size: 2.8rem;
-    font-weight: 700;
+    font-size: 3rem;
+    font-weight: 800;
     color: #38bdf8;
 }
 
@@ -31,24 +31,38 @@ h2, h3 {
     color: #7dd3fc;
 }
 
+.glass {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(14px);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+}
+
+.glass:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 25px rgba(56,189,248,0.2);
+}
+
 .stButton > button {
     background: linear-gradient(135deg, #38bdf8, #0ea5e9);
     color: white;
-    border-radius: 10px;
-    padding: 0.6rem 2rem;
+    border-radius: 12px;
+    padding: 0.7rem 2rem;
     font-weight: 600;
     border: none;
 }
 
 .stButton > button:hover {
-    background: linear-gradient(135deg, #0ea5e9, #0284c7);
-    transform: scale(1.02);
+    transform: scale(1.05);
 }
 
 [data-testid="stMetric"] {
     background: rgba(255,255,255,0.05);
     padding: 15px;
-    border-radius: 10px;
+    border-radius: 12px;
     border: 1px solid rgba(255,255,255,0.08);
 }
 </style>
@@ -84,11 +98,11 @@ approval_model, amount_model = load_models()
 # -----------------------------
 st.markdown("<h1>AI Car Insurance Claim Analyzer</h1>", unsafe_allow_html=True)
 st.markdown("<p style='color:#94a3b8;'>AI-powered damage detection and claim estimation system</p>", unsafe_allow_html=True)
-st.markdown("---")
 
 # -----------------------------
 # USER INFO
 # -----------------------------
+st.markdown('<div class="glass">', unsafe_allow_html=True)
 st.subheader("User Information")
 
 col1, col2, col3 = st.columns(3)
@@ -108,9 +122,12 @@ with col3:
     previous_claims = st.selectbox("Previous Claims", [0, 1, 2, 3])
     car_value = st.number_input("Car Value (INR)", 100000, 10000000, 500000)
 
+st.markdown('</div>', unsafe_allow_html=True)
+
 # -----------------------------
 # VEHICLE DETAILS
 # -----------------------------
+st.markdown('<div class="glass">', unsafe_allow_html=True)
 st.subheader("Vehicle Details")
 
 col4, col5 = st.columns(2)
@@ -131,21 +148,29 @@ with col5:
 
 car_name = st.text_input("Car Model Name")
 
-st.markdown("---")
+st.markdown('</div>', unsafe_allow_html=True)
 
 # -----------------------------
 # IMAGE UPLOAD
 # -----------------------------
+st.markdown('<div class="glass">', unsafe_allow_html=True)
 st.subheader("Upload Damage Image")
 
 uploaded_file = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
 
+st.markdown('</div>', unsafe_allow_html=True)
+
+# -----------------------------
+# PROCESS IMAGE
+# -----------------------------
 if uploaded_file:
     image = Image.open(uploaded_file)
     img_array = np.array(image)
 
     if img_array.shape[-1] == 4:
         img_array = cv2.cvtColor(img_array, cv2.COLOR_RGBA2RGB)
+
+    st.markdown('<div class="glass">', unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
 
@@ -158,9 +183,13 @@ if uploaded_file:
     with col2:
         st.image(processed_img, caption="Processed Image", width='stretch')
 
-    st.markdown("---")
+    st.markdown('</div>', unsafe_allow_html=True)
 
+    # -----------------------------
     # DAMAGE SUMMARY
+    # -----------------------------
+    st.markdown('<div class="glass">', unsafe_allow_html=True)
+
     st.subheader("Damage Analysis")
 
     c1, c2, c3 = st.columns(3)
@@ -172,9 +201,11 @@ if uploaded_file:
 
     st.progress(min(damage_percent / 100, 1.0))
 
-    st.markdown("---")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-    # PREDICT BUTTON
+    # -----------------------------
+    # PREDICTION
+    # -----------------------------
     if st.button("Predict Claim", width='stretch'):
 
         if not name or not car_name:
@@ -200,6 +231,8 @@ if uploaded_file:
                 insurance_type
             )
 
+            st.markdown('<div class="glass">', unsafe_allow_html=True)
+
             st.subheader("Claim Breakdown")
 
             c1, c2, c3 = st.columns(3)
@@ -207,14 +240,18 @@ if uploaded_file:
             c2.metric("Insurance Pays", f"₹{claim_amount:,.0f}")
             c3.metric("You Pay", f"₹{user_pay:,.0f}")
 
-            st.markdown("---")
-
             if is_approved:
                 st.success("Claim Approved based on AI model")
             else:
                 st.error("Claim Rejected based on AI model")
 
-            # DETAILED EXPLANATION
+            st.markdown('</div>', unsafe_allow_html=True)
+
+            # -----------------------------
+            # EXPLANATION
+            # -----------------------------
+            st.markdown('<div class="glass">', unsafe_allow_html=True)
+
             st.subheader("Detailed Explanation")
 
             st.markdown(f"""
@@ -244,7 +281,7 @@ Final Outcome:
 - Customer Pays: ₹{user_pay:,.0f}
 """)
 
+            st.markdown('</div>', unsafe_allow_html=True)
+
 else:
     st.info("Please upload an image to begin analysis")
-
-st.markdown("---")
