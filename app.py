@@ -5,30 +5,51 @@ from PIL import Image
 from model import train_claim_approval_model, train_claim_amount_model, predict_claim
 from utils import process_damage_image, classify_damage_severity
 
+# -----------------------------
+# PAGE CONFIG
+# -----------------------------
 st.set_page_config(page_title="AI Insurance Analyzer", layout="wide")
 
 # -----------------------------
-# CUSTOM CLEAN UI STYLE
+# PREMIUM UI
 # -----------------------------
 st.markdown("""
 <style>
-body {
+.stApp {
+    background: linear-gradient(135deg, #0f172a, #020617);
+    color: #e2e8f0;
     font-family: 'Segoe UI', sans-serif;
 }
-h1, h2, h3 {
-    font-weight: 600;
+
+h1 {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #38bdf8;
 }
-.block-container {
-    padding-top: 2rem;
+
+h2, h3 {
+    color: #7dd3fc;
 }
-.stButton>button {
-    background-color: #1f77b4;
+
+.stButton > button {
+    background: linear-gradient(135deg, #38bdf8, #0ea5e9);
     color: white;
-    border-radius: 6px;
-    padding: 0.5rem 1.5rem;
+    border-radius: 10px;
+    padding: 0.6rem 2rem;
+    font-weight: 600;
+    border: none;
 }
-.stButton>button:hover {
-    background-color: #125a91;
+
+.stButton > button:hover {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    transform: scale(1.02);
+}
+
+[data-testid="stMetric"] {
+    background: rgba(255,255,255,0.05);
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.08);
 }
 </style>
 """, unsafe_allow_html=True)
@@ -61,11 +82,12 @@ approval_model, amount_model = load_models()
 # -----------------------------
 # HEADER
 # -----------------------------
-st.title("AI Car Insurance Claim Analyzer")
+st.markdown("<h1>AI Car Insurance Claim Analyzer</h1>", unsafe_allow_html=True)
+st.markdown("<p style='color:#94a3b8;'>AI-powered damage detection and claim estimation system</p>", unsafe_allow_html=True)
 st.markdown("---")
 
 # -----------------------------
-# USER DETAILS
+# USER INFO
 # -----------------------------
 st.subheader("User Information")
 
@@ -86,26 +108,28 @@ with col3:
     previous_claims = st.selectbox("Previous Claims", [0, 1, 2, 3])
     car_value = st.number_input("Car Value (INR)", 100000, 10000000, 500000)
 
-st.markdown("### Vehicle Details")
+# -----------------------------
+# VEHICLE DETAILS
+# -----------------------------
+st.subheader("Vehicle Details")
 
 col4, col5 = st.columns(2)
 
 with col4:
-    brand_option = st.selectbox(
+    car_brand = st.selectbox(
         "Car Brand",
         ["Maruti Suzuki", "Hyundai", "Tata", "Mahindra", "Toyota",
          "Honda", "Kia", "MG", "Skoda", "Volkswagen", "BMW", "Mercedes",
          "Audi", "Volvo", "Jaguar", "Land Rover", "Porsche", "Other"]
     )
 
-    if brand_option == "Other":
-        custom_brand = st.text_input("Enter Car Brand")
-        car_brand = custom_brand if custom_brand else "Custom Brand"
-    else:
-        car_brand = brand_option
-
 with col5:
-    car_name = st.text_input("Car Model Name")
+    if car_brand == "Other":
+        car_brand_custom = st.text_input("Enter Custom Brand")
+    else:
+        car_brand_custom = car_brand
+
+car_name = st.text_input("Car Model Name")
 
 st.markdown("---")
 
@@ -144,7 +168,7 @@ if uploaded_file:
     c2.metric("Severity", severity)
     c3.metric("Car Value", f"₹{car_value:,.0f}")
 
-    st.markdown(f"Vehicle: {car_brand} {car_name} ({car_type})")
+    st.markdown(f"Vehicle: {car_brand_custom} {car_name} ({car_type})")
 
     st.progress(min(damage_percent / 100, 1.0))
 
@@ -180,8 +204,8 @@ if uploaded_file:
 
             c1, c2, c3 = st.columns(3)
             c1.metric("Repair Cost", f"₹{repair_cost:,.0f}")
-            c2.metric("Insurance Coverage", f"₹{claim_amount:,.0f}")
-            c3.metric("Customer Pays", f"₹{user_pay:,.0f}")
+            c2.metric("Insurance Pays", f"₹{claim_amount:,.0f}")
+            c3.metric("You Pay", f"₹{user_pay:,.0f}")
 
             st.markdown("---")
 
@@ -201,7 +225,7 @@ Policyholder Details:
 
 Vehicle Information:
 - Type: {car_type}
-- Model: {car_brand} {car_name}
+- Model: {car_brand_custom} {car_name}
 - Age: {car_age} years
 - Value: ₹{car_value:,.0f}
 
